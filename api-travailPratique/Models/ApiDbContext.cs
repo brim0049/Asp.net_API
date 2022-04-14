@@ -8,12 +8,15 @@ namespace api_travailPratique.Models
         public DbSet<Produit>? Produits { get; set; }
         public DbSet<Facture>? Factures { get; set; }
 
-      
-       
+        /*
+        public DbSet<Login>? Logins { get; set; }
+        public DbSet<Register>? Registers { get; set; } */
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder dbContextOptionsBuilder)
         {
             // MySQL Community Server
-            string ConnectionString = "server=localhost;port=3306;database=ApiDb;user=api_user;password=api_user";
+            string ConnectionString = "server=localhost;port=3306;database=apidb;user=api_user;password=api_user";
             dbContextOptionsBuilder.UseMySql(ConnectionString, ServerVersion.AutoDetect(ConnectionString));
         }
 
