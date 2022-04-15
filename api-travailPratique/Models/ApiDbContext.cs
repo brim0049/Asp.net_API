@@ -8,10 +8,6 @@ namespace api_travailPratique.Models
         public DbSet<Produit>? Produits { get; set; }
         public DbSet<Facture>? Factures { get; set; }
 
-        /*
-        public DbSet<Login>? Logins { get; set; }
-        public DbSet<Register>? Registers { get; set; } */
-
 
         protected override void OnConfiguring(DbContextOptionsBuilder dbContextOptionsBuilder)
         {
