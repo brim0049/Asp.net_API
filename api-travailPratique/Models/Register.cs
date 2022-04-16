@@ -2,17 +2,23 @@
 
 namespace api_travailPratique.Models
 {
+    public enum Role
+    {
+        Client,
+        Vendeur
+ 
+    }
     public class Register
     {
-        [Required]
+        [Required(ErrorMessage = "Ce champ est requis !")]
         public string? UserName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ce champ est requis !")]
         public string FirstName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ce champ est requis !")]
         public string LastName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ce champ est requis !")]
         public string? Password { get; set; }
-        [Required]
-        public string? Role { get; set; }
+        [Required(ErrorMessage = "Ce champ est requis !")]
+        public Role? Role { get; set; }
     }
 }

@@ -68,7 +68,7 @@ namespace api_travailPratique.Controllers
 
         [AllowAnonymous]
         [HttpPost(nameof(Login))]
-        public async Task<IActionResult> Login([FromBody] Models.Login data)
+        public async Task<IActionResult> Login([FromForm] Models.Login data)
         {
             IActionResult response = Unauthorized();
             var user = await AuthenticateUser(data);
@@ -80,9 +80,9 @@ namespace api_travailPratique.Controllers
             return response;
         }
         [HttpPost(nameof(Register))]
-        public IActionResult Register([FromBody] Models.Register register)
+        public IActionResult Register([FromForm] Models.Register register)
         {
-            if (register.Role == "Client")
+            if (register.Role.ToString() == "Client")
             {
                 db.Clients.Add(new Models.Client
                 {
@@ -90,12 +90,12 @@ namespace api_travailPratique.Controllers
                     FirstName = register.FirstName,
                     LastName = register.LastName,
                     Password = register.Password,
-                    Profil = register.Role,
+                    Profil = register.Role.ToString(),
                     Solde = 5000 });
                 db.SaveChanges();
                 return Ok(db.Clients);
             }
-            else if (register.Role == "Vendeur")
+            else if (register.Role.ToString() == "Vendeur")
             {
                 db.Vendeurs.Add(new Models.Vendeur
                 {
@@ -103,7 +103,7 @@ namespace api_travailPratique.Controllers
                     FirstName = register.FirstName,
                     LastName = register.LastName,
                     Password = register.Password,
-                    Profil = register.Role,
+                    Profil = register.Role.ToString(),
                     Solde = 0
                 });
                 db.SaveChanges();

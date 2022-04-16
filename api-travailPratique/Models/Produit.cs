@@ -7,6 +7,7 @@
             Clients = new List<Client>();
         }
         public int Id { get; set; }
+        public string NomProduit { get; set; }
         public int Quantite { get; set; }
         public decimal Price { get; set; }
         // relation avec vendeur (many to one)
