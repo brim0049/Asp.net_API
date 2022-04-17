@@ -79,19 +79,15 @@ builder.Services.AddAuthentication(options => {
         ValidAudience = builder.Configuration["Jwt:Audience"],
         ValidateAudience = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ValidateLifetime = true, // In any other application other then demo this needs to be true,
+   //    ValidateLifetime = true, // In any other application other then demo this needs to be true,
         ValidateIssuerSigningKey = true
     };
 });
 
-builder.Services.AddAuthentication();
+//builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
-
-// builder.Services.AddSingleton<ItemRepository>();
+//builder.Services.AddSingleton<ItemRepository>();
 var app = builder.Build();
-
-app.UseMvc();
-
 
 app.UseSwagger();
 app.UseSwaggerUI(config =>
@@ -101,7 +97,7 @@ app.UseSwaggerUI(config =>
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMvc();
 
 app.Run();
 

@@ -17,9 +17,8 @@ namespace api_travailPratique.Controllers
             db = new Models.ApiDbContext();
         }
 
-
-        [HttpGet]
         [Authorize]
+        [HttpGet]
         [Route("info")]
         public IActionResult GetVendeurs()
         {
@@ -33,7 +32,7 @@ namespace api_travailPratique.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize]
         [HttpPut]
         [Route("info/{vendeurId}")]
         public IActionResult UpdateVendeur(int vendeurId, [FromForm] Models.UserForm userForm)
@@ -63,7 +62,7 @@ namespace api_travailPratique.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpGet]
         [Route("products")]
         public IActionResult GetProducts()
@@ -78,7 +77,7 @@ namespace api_travailPratique.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize]
         [HttpPost]
         [Route("products")]
         public IActionResult CreateProduct([FromForm] Models.ProduitForm produitForm)
@@ -103,6 +102,7 @@ namespace api_travailPratique.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         [Route("products/{productId}")]
         public IActionResult GetProduct(int productId)
@@ -124,6 +124,7 @@ namespace api_travailPratique.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut]
         [Route("products/{productId}")]
         public IActionResult UpdateProduct(int productId, [FromForm] Models.ProduitForm produitForm)
@@ -151,6 +152,7 @@ namespace api_travailPratique.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("products/{productId}")]
         public IActionResult RemoveProduct(int productId)
