@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -57,12 +58,20 @@ builder.Services.AddSwaggerGen(options => {
     options.AddSecurityDefinition("Bearer", securityScheme);
     options.AddSecurityRequirement(securityReq);
 });
+//pour afficher le string d'enumeration
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+});
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options => {
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -70,7 +79,7 @@ builder.Services.AddAuthentication(options => {
         ValidAudience = builder.Configuration["Jwt:Audience"],
         ValidateAudience = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ValidateLifetime = false, // In any other application other then demo this needs to be true,
+        ValidateLifetime = true, // In any other application other then demo this needs to be true,
         ValidateIssuerSigningKey = true
     };
 });
@@ -92,6 +101,7 @@ app.UseSwaggerUI(config =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.Run();
 

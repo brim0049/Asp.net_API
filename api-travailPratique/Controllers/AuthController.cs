@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 
 namespace api_travailPratique.Controllers
 {
@@ -21,6 +22,7 @@ namespace api_travailPratique.Controllers
     {
 
         private IConfiguration _config;
+        PasswordHasher<string> pw = new PasswordHasher<string>();
         Models.ApiDbContext db = new Models.ApiDbContext();
         public AuthController(IConfiguration config)
         {
@@ -45,25 +47,39 @@ namespace api_travailPratique.Controllers
 
         private async Task<Models.User> AuthenticateUser(Models.Login login)
         {
+            
             Models.User user = null;
             var ValidClient = db.Clients.Any(x => x.UserName.Equals(login.UserName));
             var ValidVendeur = db.Vendeurs.Any(x => x.UserName.Equals(login.UserName));
             if (ValidClient)
             {
+                string PasswordHashed = db.Clients.FirstOrDefault(user =>
+                user.UserName.Equals(login.UserName)).Password;
                 return db.Clients.FirstOrDefault(user =>
             user.UserName.Equals(login.UserName)
-            && user.Password == login.Password);
+            && PasswordVerificationResult.Failed == pw.VerifyHashedPassword(
+            login.UserName,
+            PasswordHashed,
+            login.Password) ?
+            false : true);
             }
-            else if(ValidVendeur) {
+            else if (ValidVendeur)
+            {
+                string PasswordHashed = db.Vendeurs.FirstOrDefault(user =>
+             user.UserName.Equals(login.UserName)).Password;
                 return db.Vendeurs.FirstOrDefault(user =>
-               user.UserName.Equals(login.UserName)
-               && user.Password == login.Password);
+            user.UserName.Equals(login.UserName)
+            && PasswordVerificationResult.Success == pw.VerifyHashedPassword(
+            login.UserName,
+            PasswordHashed,
+            login.Password) ?
+            true : false);
             }
             else
             {
                 return user;
             }
-            }
+        }
 
 
         [AllowAnonymous]
@@ -82,7 +98,10 @@ namespace api_travailPratique.Controllers
         [HttpPost(nameof(Register))]
         public IActionResult Register([FromForm] Models.Register register)
         {
-            if (register.Role.ToString() == "Client")
+
+            if (!db.Vendeurs.Any(user =>
+             user.UserName.Equals(register.UserName)) && !db.Clients.Any(user =>
+             user.UserName.Equals(register.UserName)) && register.Role.ToString() == "Client")
             {
                 db.Clients.Add(new Models.Client
                 {
@@ -91,18 +110,21 @@ namespace api_travailPratique.Controllers
                     LastName = register.LastName,
                     Password = register.Password,
                     Profil = register.Role.ToString(),
-                    Solde = 5000 });
+                    Solde = 5000
+                });
                 db.SaveChanges();
                 return Ok(db.Clients);
             }
-            else if (register.Role.ToString() == "Vendeur")
+            else if (!db.Vendeurs.Any(user =>
+              user.UserName.Equals(register.UserName)) && !db.Clients.Any(user =>
+              user.UserName.Equals(register.UserName)) && register.Role.ToString() == "Vendeur")
             {
                 db.Vendeurs.Add(new Models.Vendeur
                 {
                     UserName = register.UserName,
                     FirstName = register.FirstName,
                     LastName = register.LastName,
-                    Password = register.Password,
+                    Password = pw.HashPassword(register.UserName, register.Password),
                     Profil = register.Role.ToString(),
                     Solde = 0
                 });

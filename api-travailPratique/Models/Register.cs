@@ -1,12 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace api_travailPratique.Models
 {
     public enum Role
     {
-        Client,
-        Vendeur
- 
+         Client =1,
+         Vendeur =2
     }
     public class Register
     {
@@ -18,7 +18,9 @@ namespace api_travailPratique.Models
         public string LastName { get; set; }
         [Required(ErrorMessage = "Ce champ est requis !")]
         public string? Password { get; set; }
+        [EnumDataType(typeof(Role))]
         [Required(ErrorMessage = "Ce champ est requis !")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Role? Role { get; set; }
     }
 }

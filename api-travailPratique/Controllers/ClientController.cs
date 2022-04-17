@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_travailPratique.Controllers
@@ -13,6 +14,7 @@ namespace api_travailPratique.Controllers
         {
             db = new Models.ApiDbContext();
         }
+        [Authorize]
         [HttpGet(Name = "GetClients")]
         public IActionResult GetClients()
         {
