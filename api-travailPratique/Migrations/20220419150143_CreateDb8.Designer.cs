@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api_travailPratique.Models;
 
@@ -10,9 +11,10 @@ using api_travailPratique.Models;
 namespace api_travailPratique.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220419150143_CreateDb8")]
+    partial class CreateDb8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,26 +100,6 @@ namespace api_travailPratique.Migrations
                     b.HasIndex("VendeurId");
 
                     b.ToTable("Produits");
-                });
-
-            modelBuilder.Entity("api_travailPratique.Models.StatClient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NombreArticleAchetes")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TotalSommeDepensees")
-                        .HasColumnType("double");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StatClients");
                 });
 
             modelBuilder.Entity("api_travailPratique.Models.StatVendeur", b =>

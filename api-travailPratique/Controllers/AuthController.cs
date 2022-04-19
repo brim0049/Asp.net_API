@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace api_travailPratique.Controllers
 {
@@ -36,9 +37,15 @@ namespace api_travailPratique.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, userInfo.UserName),
+                new Claim(ClaimTypes.Role, userInfo.Profil)
+            };
+
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
-              null,
+              claims,
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);
 
@@ -108,7 +115,7 @@ namespace api_travailPratique.Controllers
                     UserName = register.UserName,
                     FirstName = register.FirstName,
                     LastName = register.LastName,
-                    Password = register.Password,
+                    Password = pw.HashPassword(register.UserName, register.Password),
                     Profil = register.Role.ToString(),
                     Solde = 5000
                 });

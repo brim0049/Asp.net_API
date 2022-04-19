@@ -1,38 +1,98 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace api_travailPratique.Controllers
 {
     [Produces("application/json")]
-    [Route("api/info")]
+    [Route("/api/Client/")]
     [ApiController]
     public class ClientController : ControllerBase
     {
         Models.ApiDbContext db = new Models.ApiDbContext();
+        PasswordHasher<string> pw = new PasswordHasher<string>();
         public ClientController()
         {
             db = new Models.ApiDbContext();
         }
-        [Authorize]
-        [HttpGet(Name = "GetClients")]
-        public IActionResult GetClients()
-        {
-            List<Models.Client> clients = db.Clients.ToList();
 
-            return Ok(clients);
-        }
-       
-        [HttpPatch("{client_id}")]
-        public IActionResult CreateTask(int client_id, [FromBody] Models.Client client)
+        [Authorize]
+        [HttpGet]
+        [Route("info")]
+        public IActionResult GetClient()
         {
-            List<Models.Client> clients = db.Clients.ToList();
-            Models.Client client_to_update = clients[client_id];
-            client_to_update.FirstName = client.FirstName ?? client_to_update.FirstName;
-            client_to_update.LastName = client.LastName ?? client_to_update.LastName;
-            client_to_update.Password = client.Password ?? client_to_update.Password;
-            client_to_update.Solde = client.Solde ?? client_to_update.Solde;
-            return Ok(client_to_update);
+            string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+            Models.Client client = db.Clients.SingleOrDefault(x => x.UserName == username);
+
+            return Ok(client);
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("info")]
+        public IActionResult UpdateClient([FromForm] Models.UserForm userForm)
+        {
+            try
+            {
+                string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                Models.Client client = db.Clients.SingleOrDefault(x => x.UserName == username);
+
+                client.UserName = userForm.UserName;
+                client.FirstName = userForm.FirstName;
+                client.LastName = userForm.LastName;
+                client.Password = pw.HashPassword(userForm.UserName, userForm.Password);
+
+                db.SaveChanges();
+
+                return Ok(client);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("products/{productId}")]
+        public IActionResult GetProducts(int productId)
+        {
+            try
+            {
+                Models.Produit produit = db.Produits.Find(productId);
+
+                if (produit != null)
+                {
+                    return Ok(produit);
+                }
+                else
+                    return StatusCode((int)StatusCodes.Status404NotFound, new { message = "Le produit n'existe pas !" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("stats")]
+        public IActionResult GetStatClient()
+        {
+            try
+            {
+                string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                Models.Client client = db.Clients.SingleOrDefault(x => x.UserName == username);
+
+                Models.StatClient stats = db.StatClients.SingleOrDefault(x => x.ClientId == client.Id);
+                return Ok(stats);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 

@@ -7,6 +7,8 @@ namespace api_travailPratique.Models
         public DbSet<Vendeur>? Vendeurs { get; set; }
         public DbSet<Produit>? Produits { get; set; }
         public DbSet<Facture>? Factures { get; set; }
+        public DbSet<StatVendeur>? StatVendeurs { get; set; }
+        public DbSet<StatClient>? StatClients { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder dbContextOptionsBuilder)
