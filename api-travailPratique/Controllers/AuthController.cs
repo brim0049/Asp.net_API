@@ -64,16 +64,16 @@ namespace api_travailPratique.Controllers
                 user.UserName.Equals(login.UserName)).Password;
                 return db.Clients.FirstOrDefault(user =>
             user.UserName.Equals(login.UserName)
-            && PasswordVerificationResult.Failed == pw.VerifyHashedPassword(
+            && PasswordVerificationResult.Success == pw.VerifyHashedPassword(
             login.UserName,
             PasswordHashed,
             login.Password) ?
-            false : true);
+            true : false);
             }
             else if (ValidVendeur)
             {
                 string PasswordHashed = db.Vendeurs.FirstOrDefault(user =>
-             user.UserName.Equals(login.UserName)).Password;
+                user.UserName.Equals(login.UserName)).Password;
                 return db.Vendeurs.FirstOrDefault(user =>
             user.UserName.Equals(login.UserName)
             && PasswordVerificationResult.Success == pw.VerifyHashedPassword(

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api_travailPratique.Models;
 
@@ -10,9 +11,10 @@ using api_travailPratique.Models;
 namespace api_travailPratique.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220423194740_newaain")]
+    partial class newaain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,13 +61,10 @@ namespace api_travailPratique.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClientId")
+                    b.Property<int>("ClientId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int?>("VendeurId")
+                    b.Property<int>("VendeurId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -101,6 +100,49 @@ namespace api_travailPratique.Migrations
                     b.HasIndex("VendeurId");
 
                     b.ToTable("Produits");
+                });
+
+            modelBuilder.Entity("api_travailPratique.Models.StatClient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NombreArticleAchetes")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TotalSommeDepensees")
+                        .HasColumnType("double");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StatClients");
+                });
+
+            modelBuilder.Entity("api_travailPratique.Models.StatVendeur", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double>("Benefice")
+                        .HasColumnType("double");
+
+                    b.Property<int>("NombreArticleVendus")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TotalSomme")
+                        .HasColumnType("double");
+
+                    b.Property<int?>("VendeurId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StatVendeurs");
                 });
 
             modelBuilder.Entity("api_travailPratique.Models.Vendeur", b =>
@@ -156,11 +198,15 @@ namespace api_travailPratique.Migrations
                 {
                     b.HasOne("api_travailPratique.Models.Client", "Client")
                         .WithMany("Factures")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("api_travailPratique.Models.Vendeur", "Vendeur")
                         .WithMany("Factures")
-                        .HasForeignKey("VendeurId");
+                        .HasForeignKey("VendeurId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Client");
 

@@ -5,8 +5,8 @@ namespace api_travailPratique.Models
 {
     public enum Role
     {
-         Client =1,
-         Vendeur =2
+         Client =2,
+         Vendeur =3
     }
     public class Register
     {

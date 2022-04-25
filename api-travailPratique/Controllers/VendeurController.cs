@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace api_travailPratique.Controllers
@@ -38,7 +37,7 @@ namespace api_travailPratique.Controllers
         }
 
         [Authorize]
-        [HttpPut]
+        [HttpPatch]
         [Route("info")]
         public IActionResult UpdateVendeur([FromForm] Models.UserForm userForm)
         {
@@ -47,10 +46,10 @@ namespace api_travailPratique.Controllers
                 string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 Models.Vendeur vendeur = db.Vendeurs.SingleOrDefault(x => x.UserName == username);
 
-                vendeur.UserName = userForm.UserName;
-                vendeur.FirstName = userForm.FirstName;
-                vendeur.LastName = userForm.LastName;
-                vendeur.Password = pw.HashPassword(userForm.UserName, userForm.Password);
+                vendeur.FirstName = userForm.FirstName is null ?  vendeur.FirstName : userForm.FirstName;
+                vendeur.LastName = userForm.LastName is null ? vendeur.LastName : userForm.LastName;
+                vendeur.Password = pw.HashPassword(vendeur.UserName, userForm.Password);
+                vendeur.Solde = userForm.Solde is null ? vendeur.Solde : userForm.Solde;
 
                 db.SaveChanges();
 
@@ -72,8 +71,9 @@ namespace api_travailPratique.Controllers
                 string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 Models.Vendeur vendeur = db.Vendeurs.SingleOrDefault(x => x.UserName == username);
 
-                List<Models.Produit> produits = db.Produits.Where(x => x.VendeurId == vendeur.Id).ToList();
-                return Ok(produits);
+                Models.Vendeur vendeurProduit = db.Vendeurs.Include(User => User.Produits).Where(user => user.Id == vendeur.Id).First();
+                List<Models.Produit> produits = vendeurProduit.Produits.ToList();
+                return Ok(vendeurProduit);
             }
             catch (Exception ex)
             {
@@ -91,12 +91,11 @@ namespace api_travailPratique.Controllers
                 string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 Models.Vendeur vendeur = db.Vendeurs.SingleOrDefault(x => x.UserName == username);
 
-                db.Produits.Add(new Models.Produit()
+                vendeur.Produits.Add(new Models.Produit()
                 {
                     NomProduit = produitForm.NomProduit,
                     Quantite = produitForm.Quantite,
                     Price = produitForm.Price,
-                    VendeurId = vendeur.Id,
                 });
                 db.SaveChanges();
 
@@ -116,7 +115,10 @@ namespace api_travailPratique.Controllers
         {
             try
             {
-                Models.Produit produit = db.Produits.Find(productId);
+                string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                Models.Vendeur vendeurLogged = db.Vendeurs.SingleOrDefault(x => x.UserName == username);
+                Models.Vendeur vendeur = db.Vendeurs.Include(User => User.Produits).Where(user => user.Id == vendeurLogged.Id).First();
+                Models.Produit produit = vendeur.Produits.Where(s => s.Id == productId).FirstOrDefault();
 
                 if (produit != null)
                 {
@@ -132,26 +134,21 @@ namespace api_travailPratique.Controllers
         }
 
         [Authorize]
-        [HttpPut]
+        [HttpPatch]
         [Route("products/{productId}")]
         public IActionResult UpdateProduct(int productId, [FromForm] Models.ProduitForm produitForm)
         {
             try
             {
-                Models.Produit produit = db.Produits.Find(productId);
-
-                if (produit != null)
-                {
-                    produit.NomProduit = produitForm.NomProduit;
-                    produit.Quantite = produitForm.Quantite;
-                    produit.Price = produitForm.Price;
-
-                    db.SaveChanges();
-
-                    return Ok(produit);
-                }
-                else
-                    return StatusCode((int)StatusCodes.Status404NotFound, new { message = "L'utilisateur ou Le produit n'existe pas !" });
+                string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                Models.Vendeur vendeurLogged = db.Vendeurs.SingleOrDefault(x => x.UserName == username);
+                Models.Vendeur vendeur = db.Vendeurs.Include(User => User.Produits).Where(user => user.Id == vendeurLogged.Id).First();
+                Models.Produit produit = vendeur.Produits.Where(p => p.Id == productId).FirstOrDefault();
+                produit.NomProduit = produitForm.NomProduit is null? produit.NomProduit: produitForm.NomProduit;
+                produit.Price = produitForm.Price.ToString() is null? produit.Price: produitForm.Price;
+                produit.Quantite = produitForm.Quantite.ToString() is null? produit.Quantite: produitForm.Quantite;
+                db.SaveChanges();
+                return Ok(vendeur.Produits.ToList());
             }
             catch (Exception ex)
             {
@@ -161,21 +158,17 @@ namespace api_travailPratique.Controllers
 
         [Authorize]
         [HttpDelete]
-        [Route("products/{productId}")]
-        public IActionResult RemoveProduct(int productId)
+        [Route("products/{produitId}")]
+        public IActionResult RemoveProduct(int produitId)
         {
             try
             {
-                Models.Produit produit = db.Produits.Find(productId);
-
-                if (produit != null)
-                {
-                    db.Produits.Remove(produit);
-                    db.SaveChanges();
-                    return Ok();
-                }
-                else
-                    return StatusCode((int)StatusCodes.Status404NotFound, new { message = "Le produit n'existe pas !" });
+                string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                Models.Vendeur vendeurLogged = db.Vendeurs.SingleOrDefault(x => x.UserName == username);
+                Models.Vendeur vendeur = db.Vendeurs.Include(User => User.Produits).Where(user => user.Id == vendeurLogged.Id).First();
+                vendeur.Produits.Remove(db.Produits.Where(p => p.Id == produitId).FirstOrDefault());
+                db.SaveChanges();
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -192,9 +185,12 @@ namespace api_travailPratique.Controllers
             {
                 string username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 Models.Vendeur vendeur = db.Vendeurs.SingleOrDefault(x => x.UserName == username);
-
-                Models.StatVendeur stats = db.StatVendeurs.SingleOrDefault(x => x.VendeurId == vendeur.Id);
-                return Ok(stats);
+                Models.Vendeur vendeurFacture = db.Vendeurs.Include(User => User.Factures).Where(user => user.Id == vendeur.Id).First();
+                List<Models.Facture> factures = vendeurFacture.Factures.ToList();
+                decimal TotalFacture = vendeurFacture.Factures.Sum(produit => produit.Total);
+                Models.Vendeur vendeurProduit = db.Vendeurs.Include(User => User.Produits).Where(user => user.Id == vendeur.Id).First();
+                int produits = vendeurProduit.Produits.Count();
+                return StatusCode((int)StatusCodes.Status200OK, new { message = String.Format("Le vendeur {0} {1} a gagné {2:0.00} et a {3} produits !", vendeur.FirstName, vendeur.LastName, TotalFacture, produits) });
             }
             catch (Exception ex)
             {

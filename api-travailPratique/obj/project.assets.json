@@ -1602,19 +1602,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\.nuget\\packages\\": {}
+    "C:\\Users\\xrago\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\Asp.net_API\\api-travailPratique\\api-travailPratique.csproj",
+      "projectUniqueName": "C:\\Users\\xrago\\source\\repos\\api-travailPratique\\api-travailPratique\\api-travailPratique.csproj",
       "projectName": "api-travailPratique",
-      "projectPath": "C:\\Users\\Admin\\Desktop\\Asp.net_API\\api-travailPratique\\api-travailPratique.csproj",
-      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\Desktop\\Asp.net_API\\api-travailPratique\\obj\\",
+      "projectPath": "C:\\Users\\xrago\\source\\repos\\api-travailPratique\\api-travailPratique\\api-travailPratique.csproj",
+      "packagesPath": "C:\\Users\\xrago\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\xrago\\source\\repos\\api-travailPratique\\api-travailPratique\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\xrago\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1691,7 +1691,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.202\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"
       }
     }
   }

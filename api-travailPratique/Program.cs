@@ -51,7 +51,10 @@ var info = new OpenApiInfo()
     Description = "Todo List Api with JWT Authentication",
     License = license
 };
-
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => {
     options.SwaggerDoc("v1", info);
